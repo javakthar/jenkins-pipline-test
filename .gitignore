@@ -1,0 +1,46 @@
+# WINDOWS image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+
+# INTELLIJ IDE IGNORE
+*.iml
+*.ipr
+*.iws
+.idea/
+
+#NETBEANS IDE IGNORE
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# MAVEN IGNORE
+target/
+
+
+# JAVA Package Files #
+*.jar
+*.war
+*.ear
+*.class
+
+
+# Integration of JRebEL plugin
+rebel.xml
+
+# LOGGING INGORE
+*.log
+
+# Mercurial (mirror) repo
+.hg/
+.hgignore
+
