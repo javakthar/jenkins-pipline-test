@@ -54,14 +54,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.jboss.arquillian.extension</groupId>
-            <artifactId>arquillian-phantom-binary</artifactId>
-            <version>1.9.2</version>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-
         <!--Vaadin-->
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -301,7 +293,7 @@
             </build>
         </profile>
         <!--JENKINS PROFILE-->
-        <!--JBoss AS 7.2 managed container environment -->
+        <!--JBoss AS 7.1.1 managed container environment -->
         <!--opera browser-->
         <profile>
             <id>jenkins-jboss-FT</id>
