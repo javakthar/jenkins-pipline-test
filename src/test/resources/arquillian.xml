@@ -4,6 +4,6 @@
     <defaultProtocol type="Servlet 3.0"/>
     <extension qualifier="webdriver">
         <property name="browser">${browser}</property>
-        <property name="phantomjs.binary.path">/home/tomcat/phantomjs-1.9.2-linux-x86_64/bin/phantomjs</property>
+        <property name="phantomjs.binary.path">${env.PHANTOMJS_HOME}</property>
     </extension>
 </arquillian>
