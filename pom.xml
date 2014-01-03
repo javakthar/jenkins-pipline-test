@@ -297,6 +297,9 @@
         <!--opera browser-->
         <profile>
             <id>jenkins-jboss-FT</id>
+            <properties>
+                <browser>firefox</browser>
+            </properties>
             <dependencies>
                 <!--JavaEE enviroment + container-->
                 <dependency>

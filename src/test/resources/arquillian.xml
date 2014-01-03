@@ -5,5 +5,7 @@
     <extension qualifier="webdriver">
         <property name="browser">${browser}</property>
         <property name="phantomjs.binary.path">${env.PHANTOMJS_HOME}</property>
+        <!--<property name="phantomjs.binary.path">phantomjs</property>-->
+
     </extension>
 </arquillian>
