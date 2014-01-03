@@ -84,7 +84,7 @@
         <profile>
             <id>dev-jboss</id>
             <properties>
-                <browser>phantomjs</browser>
+                <browser>firefox</browser>
             </properties>
             <dependencies>
                 <!--JavaEE enviroment + container-->
@@ -298,7 +298,7 @@
         <profile>
             <id>jenkins-jboss-FT</id>
             <properties>
-                <browser>firefox</browser>
+                <browser>phantomjs</browser>
             </properties>
             <dependencies>
                 <!--JavaEE enviroment + container-->
