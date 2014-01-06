@@ -15,7 +15,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <version.junit>4.11</version.junit>
         <version.mockito>1.9.5</version.mockito>
-        <version.jboss.container>7.2.0.Final</version.jboss.container>
+        <version.jboss.container>7.1.1.Final</version.jboss.container>
         <version.javaee-spec>3.0.2.Final</version.javaee-spec>
         <version.vaadin>7.1.7</version.vaadin>
         <version.vaadin.plugin>${version.vaadin}</version.vaadin.plugin>
@@ -84,7 +84,7 @@
         <profile>
             <id>dev-jboss</id>
             <properties>
-                <browser>firefox</browser>
+                <browser>phantomjs</browser>
             </properties>
             <dependencies>
                 <!--JavaEE enviroment + container-->
