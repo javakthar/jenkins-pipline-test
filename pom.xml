@@ -10,33 +10,47 @@
     <version>1.0</version>
 
     <properties>
+        <!--Environment-->
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <version.junit>4.11</version.junit>
-        <version.mockito>1.9.5</version.mockito>
-        <version.jboss.container>7.1.1.Final</version.jboss.container>
+        <!--Java sdk and specification-->
+        <version.jdk>1.7</version.jdk>
         <version.javaee-spec>3.0.2.Final</version.javaee-spec>
+        <!--Testing tools-->
+        <version.junit>4.11</version.junit>
+        <version.graphene>2.0.0.Final</version.graphene>
+        <version.jboss.container>7.1.1.Final</version.jboss.container>
+        <!--Vaadin view-->
         <version.vaadin>7.1.7</version.vaadin>
         <version.vaadin.plugin>${version.vaadin}</version.vaadin.plugin>
-        <!--Default browser for UI testing-->
+        <!--Maven-->
+        <version.plugin.surfire>2.16</version.plugin.surfire>
+        <version.plugin.failsafe>2.16</version.plugin.failsafe>
+        <version.plugin.war>2.3</version.plugin.war>
+        <version.plugin.compiler>3.1</version.plugin.compiler>
+        <version.plugin.jboss>7.4.Final</version.plugin.jboss>
+        <version.plugin.clean>2.4.1</version.plugin.clean>
+        <!--Default build behaviour-->
+        <!--run unit tests, skip integration tests and excluded FT test classes-->
+        <!--for integration testing is mandatory to set skip.test.integration to false
+        and set test type to IT (default) or FT for integration test or functional
+        test respectively-->
+        <skip.test.unit>false</skip.test.unit>
+        <skip.test.integration>true</skip.test.integration>
+        <test.type>IT</test.type>
         <browser>phantomjs</browser>
+        <phantomjs_home>${env.PHANTOMJS_HOME}</phantomjs_home>
     </properties>
 
+    <!--C O M M O N-->
     <dependencies>
-        <!--Testing-->
+        <!--T E S T I N G-->
+        <!--JUnit-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--Mocking framework-->
-        <!--Not needed for arquillian-->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${version.mockito}</version>
             <scope>test</scope>
         </dependency>
         <!--Arquillian dependency-->
@@ -45,15 +59,15 @@
             <artifactId>arquillian-junit-container</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--Arquillian extension (Webdriver wrapper)-->
+        <!--Arquillian extensions (Webdriver wrapper)-->
         <dependency>
             <groupId>org.jboss.arquillian.graphene</groupId>
             <artifactId>graphene-webdriver</artifactId>
-            <version>2.0.0.Final</version>
+            <version>${version.graphene}</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>
-
+        <!--V I E W-->
         <!--Vaadin-->
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -78,14 +92,10 @@
     </dependencies>
 
     <profiles>
-        <!--DEVELOPER PROFILE-->
-        <!--JBoss AS 7.2 remote container environment -->
-        <!--default browser-->
+        <!--D E V E L O P E R-->
+        <!--JBoss AS 7.1.1 remote container environment -->
         <profile>
             <id>dev-jboss</id>
-            <properties>
-                <browser>phantomjs</browser>
-            </properties>
             <dependencies>
                 <!--JavaEE enviroment + container-->
                 <dependency>
@@ -106,11 +116,6 @@
                     <artifactId>arquillian-protocol-servlet</artifactId>
                     <scope>test</scope>
                 </dependency>
-                <dependency>
-                    <groupId>org.jboss.arquillian.extension</groupId>
-                    <artifactId>arquillian-phantom-driver</artifactId>
-                    <version>1.1.0.Final</version>
-                </dependency>
             </dependencies>
             <build>
                 <testResources>
@@ -123,13 +128,16 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.16</version>
+                        <version>${version.plugin.surfire}</version>
+                        <configuration>
+                            <skipTests>${skip.test.unit}</skipTests>
+                        </configuration>
                     </plugin>
                     <!--Integration tests runner-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.16</version>
+                        <version>${version.plugin.failsafe}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -141,19 +149,18 @@
                         <configuration>
                             <!--True if you want skip unit tests to speed up build
                             or run only IT tests-->
-                            <skipTests>true</skipTests>
+                            <skipTests>${skip.test.integration}</skipTests>
                             <includes>
                                 <include>**/*IT.class</include>
                                 <include>**/*FT.class</include>
                             </includes>
-                            <runOrder>alphabetical</runOrder>
                         </configuration>
                     </plugin>
                     <!--JBoss deploy plugin-->
                     <plugin>
                         <groupId>org.jboss.as.plugins</groupId>
                         <artifactId>jboss-as-maven-plugin</artifactId>
-                        <version>7.4.Final</version>
+                        <version>${version.plugin.jboss}</version>
                         <executions>
                             <execution>
                                 <phase>post-integration-test</phase>
@@ -166,140 +173,11 @@
                 </plugins>
             </build>
         </profile>
-        <!--JENKINS BUILD PROFILE-->
+
+        <!--J E N K I N S-->
         <!--JBoss AS 7.1.1 managed container environment -->
-        <!--default browser-->
         <profile>
-            <id>jenkins-jboss-build</id>
-            <dependencies>
-                <!--JavaEE enviroment + container-->
-                <dependency>
-                    <groupId>org.jboss.spec</groupId>
-                    <artifactId>jboss-javaee-6.0</artifactId>
-                    <version>${version.javaee-spec}</version>
-                    <type>pom</type>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-arquillian-container-managed</artifactId>
-                    <version>7.1.1.Final</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.arquillian.protocol</groupId>
-                    <artifactId>arquillian-protocol-servlet</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <testResources>
-                    <!--jboss persistance unit-->
-                    <testResource>
-                        <directory>src/test/resources-jboss</directory>
-                    </testResource>
-                </testResources>
-                <plugins>
-                    <!--Unit IT runner -> IT are run after compile phase-->
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.12</version>
-                    </plugin>
-                    <!--Integration tests runner-->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.16</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!--JENKINS PROFILE-->
-        <!--JBoss AS 7.1.1 managed container environment -->
-        <!--default browser-->
-        <profile>
-            <id>jenkins-jboss-IT</id>
-            <dependencies>
-                <!--JavaEE enviroment + container-->
-                <dependency>
-                    <groupId>org.jboss.spec</groupId>
-                    <artifactId>jboss-javaee-6.0</artifactId>
-                    <version>${version.javaee-spec}</version>
-                    <type>pom</type>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-arquillian-container-managed</artifactId>
-                    <version>7.1.1.Final</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.arquillian.protocol</groupId>
-                    <artifactId>arquillian-protocol-servlet</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <testResources>
-                    <!--jboss persistance unit-->
-                    <testResource>
-                        <directory>src/test/resources-jboss</directory>
-                    </testResource>
-                </testResources>
-                <plugins>
-                    <!--Unit IT runner -> IT are run after compile phase-->
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.12</version>
-                        <configuration>
-                            <!--True if you want skip unit tests to speed up build
-                            or run only IT tests-->
-                            <skipTests>true</skipTests>
-                        </configuration>
-                    </plugin>
-                    <!--Integration tests runner-->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.16</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <includes>
-                                <include>**/*IT.class</include>
-                            </includes>
-                            <runOrder>alphabetical</runOrder>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!--JENKINS PROFILE-->
-        <!--JBoss AS 7.1.1 managed container environment -->
-        <!--opera browser-->
-        <profile>
-            <id>jenkins-jboss-FT</id>
-            <properties>
-                <browser>phantomjs</browser>
-            </properties>
+            <id>jenkins-jboss</id>
             <dependencies>
                 <!--JavaEE enviroment + container-->
                 <dependency>
@@ -332,18 +210,16 @@
                     <!--Unit IT runner -> IT are run after compile phase-->
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.12</version>
+                        <version>${version.plugin.surfire}</version>
                         <configuration>
-                            <!--True if you want skip unit tests to speed up build
-                            or run only IT tests-->
-                            <skipTests>true</skipTests>
+                            <skipTests>${skip.test.unit}</skipTests>
                         </configuration>
                     </plugin>
                     <!--Integration tests runner-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.16</version>
+                        <version>${version.plugin.failsafe}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -353,10 +229,10 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <skip>${skip.test.integration}</skip>
                             <includes>
-                                <include>**/*FT.class</include>
+                                <include>**/*${test.type}.class</include>
                             </includes>
-                            <runOrder>alphabetical</runOrder>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -364,6 +240,7 @@
         </profile>
     </profiles>
 
+    <!--C O M M O N -->
     <build>
         <testResources>
             <!--Arquillian xml-->
@@ -376,25 +253,24 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${version.plugin.compiler}</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${version.jdk}</source>
+                    <target>${version.jdk}</target>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
+                <version>${version.plugin.war}</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-
             <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
             <!-- directory is cleaned properly -->
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>2.4.1</version>
+                <version>${version.plugin.clean}</version>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -406,6 +282,7 @@
         </plugins>
     </build>
 
+    <!--================================================================-->
     <!--Must have for Arquillian functionality (Maven dependencies)-->
     <dependencyManagement>
         <dependencies>
@@ -434,7 +311,7 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--Repositories-->
+    <!--R E P O S I T O R I E S-->
     <repositories>
         <repository>
             <id>vaadin-addons</id>
@@ -459,7 +336,6 @@
             <layout>default</layout>
         </repository>
     </repositories>
-
     <!--Plugins repos-->
     <pluginRepositories>
         <pluginRepository>
