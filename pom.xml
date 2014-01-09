@@ -32,13 +32,13 @@
         <version.plugin.jboss>7.4.Final</version.plugin.jboss>
         <version.plugin.clean>2.4.1</version.plugin.clean>
         <!--Default build behaviour-->
-        <!--run unit tests, skip integration tests and excluded FT test classes-->
-        <!--for integration testing is mandatory to set skip.test.integration to false
-        and set test type to IT (default) or FT for integration test or functional
-        test respectively-->
-        <skip.test.unit>false</skip.test.unit>
-        <skip.test.integration>true</skip.test.integration>
-        <test.type>IT</test.type>
+        <!--run unit tests, skip integration tests and functional tests-->
+        <!--for integration testing is mandatory to set skip.test.it to false
+        , for funtional testing is mandatory to set skip.test.ft to false-->
+        <!--default browser for functional testing is PhantomJS-->
+        <test.skip.ut>false</test.skip.ut>
+        <test.skip.it>true</test.skip.it>
+        <test.skip.ft>true</test.skip.ft>
         <browser>phantomjs</browser>
         <phantomjs_home>${env.PHANTOMJS_HOME}</phantomjs_home>
     </properties>
@@ -125,37 +125,6 @@
                     </testResource>
                 </testResources>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${version.plugin.surfire}</version>
-                        <configuration>
-                            <skipTests>${skip.test.unit}</skipTests>
-                        </configuration>
-                    </plugin>
-                    <!--Integration tests runner-->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${version.plugin.failsafe}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <!--True if you want skip unit tests to speed up build
-                            or run only IT tests-->
-                            <skipTests>${skip.test.integration}</skipTests>
-                            <includes>
-                                <include>**/*IT.class</include>
-                                <include>**/*FT.class</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
                     <!--JBoss deploy plugin-->
                     <plugin>
                         <groupId>org.jboss.as.plugins</groupId>
@@ -207,34 +176,6 @@
                     </testResource>
                 </testResources>
                 <plugins>
-                    <!--Unit IT runner -> IT are run after compile phase-->
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${version.plugin.surfire}</version>
-                        <configuration>
-                            <skipTests>${skip.test.unit}</skipTests>
-                        </configuration>
-                    </plugin>
-                    <!--Integration tests runner-->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${version.plugin.failsafe}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <skip>${skip.test.integration}</skip>
-                            <includes>
-                                <include>**/*${test.type}.class</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -265,6 +206,49 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
+            </plugin>
+            <!--Unit test runner-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${version.plugin.surfire}</version>
+                <configuration>
+                    <skipTests>${test.skip.ut}</skipTests>
+                </configuration>
+            </plugin>
+            <!--Integration tests runner-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${version.plugin.failsafe}</version>
+                <executions>
+                    <execution>
+                        <id>it-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${test.skip.it}</skip>
+                            <includes>
+                                <include>**/*IT.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>functional-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${test.skip.ft}</skip>
+                            <includes>
+                                <include>**/*FT.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
             <!-- directory is cleaned properly -->
